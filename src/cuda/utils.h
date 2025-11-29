@@ -6,6 +6,9 @@
 #include <hip/hip_runtime.h>
 #include <hipblas/hipblas.h>
 #include <thrust/execution_policy.h>
+#include <thrust/iterator/counting_iterator.h>
+#include <thrust/reduce.h>
+#include <thrust/extrema.h>
 #include <hipcub/hipcub.hpp>
 #ifdef CT2_WITH_TENSOR_PARALLEL
   #include <cuda/mpi_stub.h>
@@ -75,6 +78,9 @@
 #include <cuda_runtime.h>
 #include <cublas_v2.h>
 #include <thrust/execution_policy.h>
+#include <thrust/iterator/counting_iterator.h>
+#include <thrust/reduce.h>
+#include <thrust/extrema.h>
 #ifdef CT2_WITH_TENSOR_PARALLEL
 #  include <cuda/mpi_stub.h>
 #  include <nccl.h>
