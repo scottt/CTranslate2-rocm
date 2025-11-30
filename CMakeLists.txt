@@ -1,9 +1,10 @@
 cmake_minimum_required(VERSION 3.7)
 
+# CMake Error in CMakeLists.txt: MSVC_RUNTIME_LIBRARY value 'MultiThreadedDebugDLL' not known for this HIP compiler.
 # Set policy for setting the MSVC runtime library for static MSVC builds
-if(POLICY CMP0091)
-  cmake_policy(SET CMP0091 NEW)
-endif()
+# if(POLICY CMP0091)
+#   cmake_policy(SET CMP0091 NEW)
+# endif()
 
 project(ctranslate2)
 
@@ -74,11 +75,11 @@ endif()
 string(REPLACE "." ";" CTRANSLATE2_VERSION_LIST ${CTRANSLATE2_VERSION})
 list(GET CTRANSLATE2_VERSION_LIST 0 CTRANSLATE2_MAJOR_VERSION)
 
-if(MSVC)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /d2FH4-")
-else()
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
-endif()
+# if(MSVC)
+#   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /d2FH4-")
+# else()
+#   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+# endif()
 
 
 if(WIN32)
@@ -88,7 +89,9 @@ if(WIN32)
     if(CMAKE_VERSION VERSION_LESS "3.15.0")
       message(FATAL_ERROR "Use CMake 3.15 or later when setting BUILD_SHARED_LIBS to OFF")
     endif()
-    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+    if(MSVC)
+      set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+    endif()
   endif()
 endif()
 
@@ -626,10 +629,12 @@ if (WITH_HIP)
     find_package(miopen)
     target_link_libraries(${PROJECT_NAME} PRIVATE MIOpen)	  
     add_definitions(-DCT2_WITH_CUDNN)
-endif()
+  endif()
 
   set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
-  set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--no-undefined") #for debug
+  if(NOT WIN32)
+    set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--no-undefined") #for debug
+  endif()
 endif()
 
 if(NOT (WITH_CUDA OR WITH_HIP))
